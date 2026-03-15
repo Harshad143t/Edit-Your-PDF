@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Users, FileText, Server, Activity, ArrowLeft } from 'lucide-react';
+import { API_BASE_URL } from '../config';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -10,14 +11,27 @@ const AdminDashboard = () => {
     serverLoad: 'Normal'
   });
 
-  // Mock fetching stats
+  // Fetch server status from the live backend Render link
   useEffect(() => {
-    // In a real app, this would be an API call to the backend
-    setStats({
-      totalUsers: 145,
-      pdfsEdited: 892,
-      serverLoad: 'Low (12% CPUs)'
-    });
+    const checkServer = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/`);
+        if (response.ok) {
+          setStats({
+            totalUsers: 145, // Kept mock data as there is no DB yet
+            pdfsEdited: 892,
+            serverLoad: 'Connected (Live)'
+          });
+        }
+      } catch (error) {
+        setStats({
+          totalUsers: 0,
+          pdfsEdited: 0,
+          serverLoad: 'Offline / Disconnected'
+        });
+      }
+    };
+    checkServer();
   }, []);
 
   return (
